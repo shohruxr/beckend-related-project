@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="index.css" />
+    <title>Document</title>
+  </head>
+  <body class="body-part">
+    <aside class="body-aside">
+      <h1><span>My</span>Finance</h1>
+
+      <div class="aside-nav">
+        <a href="#" class="home-pg overall" id="current">Bosh sahifa</a>
+        <a href="#" class="transc-pg overall">Tranzaksiyalar</a>
+        <a href="#" class="income-pg overall">Daromat va harajatlar</a>
+        <a href="#" class="goal-pg overall">Maqsadlar</a>
+        <a href="#" class="observe-pg overall">Tahlil</a>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div class="search-bar">
+          <img
+            src="/Icons:Images/magnifying-glass-solid-full.svg"
+            alt="search-bar"
+            class="search-img"
+          />
+          <input type="search" placeholder="Qidiruv..." />
+        </div>
+
+        <img src="/Icons:Images/bell-regular-full.svg" class="kalokolchik" />
+      </header>
+
+      <div class="main-bg">
+        <section class="greeting">
+          <div class="greeting-div">
+            <span class="h1">Salom, Elbek! </span>
+            <span class="p">
+              Bugungi moliyaviy holatingizni ko'ring va o' zingizning
+              maqsadlaringiz sari qadam tashlang.
+            </span>
+          </div>
+          <div>20 okt 2024</div>
+        </section>
+
+        <section class="display-section">
+          <div class="common balans">
+            <img
+              src="/Icons:Images/wallet-solid-full1.svg"
+              class="balans-icon"
+            />
+            <div class="info-display">
+              <span>Umumiy balans</span>
+              <span>0</span>
+              <span><span>0</span> o'tgan oyga nisbatan</span>
+            </div>
+          </div>
+          <div class="common income">
+            <img
+              src="/Icons:Images/arrow-trend-up-solid-full.svg "
+              class="income-icon"
+            />
+            <div class="info-display">
+              <span>Jami daromad</span>
+              <span>0</span>
+              <span><span>0</span> o'tgan oyga nisbatan</span>
+            </div>
+          </div>
+          <div class="common outcome">
+            <img
+              src="/Icons:Images/arrow-trend-down-solid-full.svg"
+              class="outcome-icon"
+            />
+            <div class="info-display">
+              <span>Jami xarajat</span>
+              <span>0</span>
+              <span><span>0</span> o'tgan oyga nisbatan</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="tr-section">
+          <div class="new-tr">
+            <img src="/Icons:Images/comments-dollar-solid-full.svg" />
+            <h3>Yangi tranzaksiya qo'shish</h3>
+            <form class="form-sec">
+              <div class="amount-div">
+                <label for="amount">Miqdor</label>
+                <input
+                  type="number"
+                  id="amount"
+                  placeholder="Masalan: 100"
+                  min="1"
+                />
+              </div>
+              <div class="currency-div">
+                <label for="valyuta">Valyuta</label>
+                <select id="valyuta">
+                  <option>SUM</option>
+                  <option>USD</option>
+                </select>
+              </div>
+
+              <div class="cat-div">
+                <label for="kategoriya">Kategoriya</label>
+                <select id="kategoriya">
+                  <option value="Maosh">Maosh</option>
+                  <option value="oyin-kulgu">O'yin-kulgu</option>
+                  <option value="oziq Ovqat">Oziq Ovqat</option>
+                  <option value="Qarz">Qarz</option>
+                  <option value="Kamunallar">Kamunallar</option>
+                  <option value="boshqa">Boshqa</option>
+                </select>
+              </div>
+              <div class="type-div">
+                <label for="type">Tur</label>
+                <div id="type">
+                  <button class="daromad">Daromad</button>
+                  <button class="xarajat">Xarajat</button>
+                </div>
+              </div>
+
+              <div class="data-div">
+                <label for="date">Sana</label>
+                <input type="date" id="date" placeholder="20.10.2000" />
+              </div>
+
+              <div class="desc-div">
+                <label for="izoh">Izoh</label>
+                <input type="text" id="izoh" placeholder="Masalan: Tushlik" />
+              </div>
+            </form>
+            <button class="save-btn">Saqlash</button>
+          </div>
+
+          <div class="tr-history">
+            <img src="/Icons:Images/google-wallet-brands-solid-full.svg" alt="transaction icon"
+            <h3>Tranzaksiyalar</h3>
+            <div>
+              <button>Barchasi</button>
+              <button>Daromad</button>
+              <button>Xarajat</button>
+            </div>
+
+            <table id="table">
+              <thead id="thead">
+                <tr>
+                  Kategoriya
+                </tr>
+                <tr>
+                  Izoh
+                </tr>
+                <tr>
+                  Sana
+                </tr>
+                <tr>
+                  Tur
+                </tr>
+                <tr>
+                  Summa
+                </tr>
+                <tr>
+                  Amallar
+                </tr>
+              </thead>
+
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section id="goal-section">
+          <div>Maqsad</div>
+          <div>
+            <h3>Maqsadingizni belgilang</h3>
+            <div class="goal-progress">
+              <div class="shadow-progress"></div>
+            </div>
+            <div id="display-amount">
+              <div id="goal-amount">$0/$0</div>
+              <div id="goal-percentage">0%</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3>Eng ko'p sarflangan kategoriya</h3>
+          <div>
+            <div>
+              <span>kategoriya</span>
+              <span>sarflangan jami summa</span>
+            </div>
+            <div>
+              <div id="progress-high-cat">
+                <div id="current-progress-cat"></div>
+              </div>
+              <div id="percentage-high-cat">0%</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

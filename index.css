@@ -1,0 +1,312 @@
+/* .body-part {
+  display: flex;
+  margin: 0;
+}
+
+.body-aside {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+  background: linear-gradient(50deg, rgb(25, 25, 63), rgb(49, 39, 155));
+}
+.body-aside h1 {
+  margin-bottom: 25px;
+  color: aliceblue;
+}
+.body-aside h1 > span {
+  color: rgb(130, 100, 230);
+}
+.body-aside h1::before {
+  content: "";
+  display: inline-block;
+  background-image: url(/Icons:Images/wallet-solid-full.svg);
+  width: 45px;
+  height: 45px;
+  background-position: center;
+  vertical-align: middle;
+  margin-right: 10px;
+  filter: invert(35%) sepia(98%) saturate(2000%) hue-rotate(215deg)
+    brightness(100%) contrast(100%);
+}
+
+.aside-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.overall {
+  text-decoration: none;
+  color: aliceblue;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px;
+}
+.overall::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-position: center;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  margin-right: 15px;
+  filter: brightness(0) invert(1);
+}
+.home-pg::before {
+  background-image: url(/Icons:Images/house-solid-full.svg);
+}
+.transc-pg::before {
+  background-image: url(/Icons:Images/money-bill-transfer-solid-full.svg);
+}
+.income-pg::before {
+  background-image: url(/Icons:Images/hand-holding-dollar-solid-full.svg);
+}
+.goal-pg::before {
+  background-image: url(/Icons:Images/piggy-bank-solid-full.svg);
+}
+.observe-pg::before {
+  background-image: url(/Icons:Images/chart-pie-solid-full.svg);
+}
+#current {
+  border: 1px solid rgb(92, 77, 227);
+  background-color: rgb(92, 77, 227);
+  border-radius: 10px;
+}
+
+main {
+  padding: 18px;
+  flex: 3;
+  background-color: white;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  position: relative;
+}
+
+.search-bar {
+  position: relative;
+  min-width: 500px;
+}
+.search-bar input {
+  padding: 10px 10px 10px 35px;
+  width: 100%;
+  border: 1px solid rgb(246, 240, 250);
+  background-color: rgb(246, 246, 251);
+  border-radius: 8px;
+}
+.search-img {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+}
+.kalokolchik {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.main-bg {
+  border-top: 1px solid rgb(238, 236, 236);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.greeting {
+  display: flex;
+  padding: 15px;
+  justify-content: space-between;
+}
+.greeting-div {
+  display: flex;
+  flex-direction: column;
+}
+.greeting-div .h1 {
+  font-size: 30px;
+}
+.greeting-div .p {
+  font-size: 12px;
+  color: rgb(130, 129, 129);
+}
+.display-section {
+  display: flex;
+  gap: 15px;
+}
+.common {
+  border: 1px solid rgb(214, 209, 209);
+  border-radius: 8px;
+  flex: 1;
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  position: relative;
+}
+.common img {
+  width: 30px;
+  padding: 6px;
+  border-radius: 14px;
+}
+.common .info-display {
+  display: flex;
+  flex-direction: column;
+}
+.balans {
+  border: 1px solid rgb(223, 223, 244);
+  background-color: rgb(232, 232, 247);
+}
+.balans-icon {
+  border: 1px solid rgb(175, 185, 250);
+  background-color: rgb(175, 185, 250);
+}
+.income {
+  border: 1px solid rgb(225, 245, 239);
+  background-color: rgb(238, 248, 245);
+}
+.income-icon {
+  border: 1px solid rgb(159, 246, 173);
+  background-color: rgb(170, 230, 200);
+}
+.outcome {
+  border: 1px solid rgb(250, 231, 228);
+  background-color: rgb(252, 242, 245);
+}
+.outcome-icon {
+  border: 1px solid rgb(234, 166, 166);
+  background-color: rgb(245, 200, 204);
+}
+
+.tr-section {
+  display: flex;
+  gap: 10px;
+}
+.new-tr {
+  flex: 2;
+  padding: 10px;
+  position: relative;
+  border: 1px solid rgb(235, 232, 232);
+  background-color: rgb(252, 250, 249);
+  border-radius: 8px;
+}
+.new-tr img {
+  position: absolute;
+  padding: 5px;
+  width: 28px;
+  top: 11%;
+  left: 5px;
+  transform: translateY(-50%);
+  border: 1px solid rgb(238, 238, 253);
+  background-color: rgb(238, 238, 253);
+  border-radius: 15px;
+}
+.new-tr h3 {
+  padding: 0 0 0 45px;
+}
+.form-sec {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  padding: 15px 0;
+}
+.amount-div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.amount-div input {
+  padding: 10px;
+  border: 1px solid rgb(201, 197, 197);
+  border-radius: 8px;
+}
+.currency-div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.currency-div select {
+  padding: 9.7px;
+  border: 1px solid rgb(201, 197, 197);
+  border-radius: 8px;
+}
+.cat-div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cat-div select {
+  padding: 10px;
+  border: 1px solid rgb(201, 197, 197);
+  border-radius: 8px;
+}
+.type-div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.type-div div {
+  display: flex;
+  gap: 10px;
+}
+.type-div button {
+  flex: 1;
+  padding: 9.7px;
+
+  border-radius: 8px;
+}
+.daromad {
+  color: green;
+  border: 1px solid rgb(136, 250, 136);
+  background-color: rgb(220, 243, 220);
+}
+.xarajat {
+  color: rgb(235, 5, 5);
+  border: 1px solid rgb(247, 168, 168);
+  background-color: rgb(251, 237, 237);
+}
+.data-div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.data-div input {
+  padding: 10px;
+  border: 1px solid rgb(201, 197, 197);
+  border-radius: 8px;
+}
+.desc-div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.desc-div input {
+  padding: 10px;
+  border: 1px solid rgb(201, 197, 197);
+  border-radius: 8px;
+}
+.save-btn {
+  width: 100%;
+  color: white;
+  padding: 8px;
+  border: 1px solid rgb(92, 58, 232);
+  border-radius: 8px;
+  background-color: rgb(92, 58, 232);
+  box-shadow: 1px 0 3px rgb(92, 58, 232);
+}
+.tr-history{
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+} */
