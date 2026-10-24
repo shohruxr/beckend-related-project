@@ -1,14 +1,46 @@
-/* .body-part {
-  display: flex;
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #171936;
+  background: #f6f7fc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --purple: #5b35e8;
+  --purple-dark: #251b60;
+  --purple-soft: #f0edff;
+  --green: #11966b;
+  --green-soft: #e9f8f1;
+  --red: #e54862;
+  --red-soft: #fff0f2;
+  --text: #171936;
+  --muted: #777b98;
+  --border: #e7e9f5;
+  --surface: #ffffff;
+  --shadow: 0 8px 24px rgba(35, 31, 92, 0.045);
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
   margin: 0;
+}
+button{
+  cursor: pointer;
+}
+.body-part {
+  display: flex;
+  background: #f6f7fc;
+  min-height: 100vh;
 }
 
 .body-aside {
-  flex: 1;
+  width: 232px;
+  flex: 0 0 232px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 25px;
-  background: linear-gradient(50deg, rgb(25, 25, 63), rgb(49, 39, 155));
+  padding: 25px 16px;
+  color: #fff;
+  background: linear-gradient(160deg, rgb(25, 25, 63), rgb(49, 39, 155));
 }
 .body-aside h1 {
   margin-bottom: 25px;
@@ -36,10 +68,12 @@
   gap: 15px;
 }
 .overall {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   text-decoration: none;
   color: aliceblue;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 10px;
 }
@@ -90,7 +124,7 @@ header {
 
 .search-bar {
   position: relative;
-  min-width: 500px;
+  width: min(420px, 60%);
 }
 .search-bar input {
   padding: 10px 10px 10px 35px;
@@ -115,13 +149,18 @@ header {
   right: 10px;
   transform: translateY(-50%);
 }
-
+.sum-up {
+  display: flex;
+  gap: 16px;
+}
 .main-bg {
+  min-width: 0;
   border-top: 1px solid rgb(238, 236, 236);
   border-radius: 6px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 5;
 }
 .greeting {
   display: flex;
@@ -267,12 +306,12 @@ header {
   border-radius: 8px;
 }
 .daromad {
-  color: green;
+  color: #e9f8f1;
   border: 1px solid rgb(136, 250, 136);
   background-color: rgb(220, 243, 220);
 }
 .xarajat {
-  color: rgb(235, 5, 5);
+  color: #fff0f2;
   border: 1px solid rgb(247, 168, 168);
   background-color: rgb(251, 237, 237);
 }
@@ -305,8 +344,129 @@ header {
   background-color: rgb(92, 58, 232);
   box-shadow: 1px 0 3px rgb(92, 58, 232);
 }
-.tr-history{
+.tr-history {
   flex: 3;
   display: flex;
+  gap: 14px;
   flex-direction: column;
-} */
+  padding: 10px;
+  position: relative;
+  border: 1px solid rgb(235, 232, 232);
+  background-color: rgb(252, 250, 249);
+  border-radius: 8px;
+}
+.tr-history img {
+  position: absolute;
+  padding: 5px;
+  width: 28px;
+  top: 11%;
+  left: 5px;
+  transform: translateY(-50%);
+  border: 1px solid rgb(238, 238, 253);
+  background-color: rgb(238, 238, 253);
+  border-radius: 15px;
+}
+.tr-history h3 {
+  padding: 0 0 0 45px;
+}
+.tr-history .btns {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+.btns button {
+  border: 1px solid rgb(154, 149, 178);
+  border-radius: 8px;
+  flex: 1;
+  padding: 8px;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+thead {
+  background: #f5f6ff;
+}
+
+th,
+td {
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eeeef5;
+  font-size: 13px;
+}
+.aside-goal {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.goal-section {
+  border: 1px solid white;
+  border-radius: 8px;
+  background: linear-gradient(to right, rgb(100, 83, 176), rgb(158, 141, 235));
+}
+.goal-txt {
+  padding: 15px;
+  color: white;
+}
+.progress-div {
+  border: 1px solid rgb(241, 240, 240);
+  border-radius: 7px;
+  background: white;
+  padding: 10px;
+}
+.progress-div h3 {
+  white-space: nowrap;
+}
+.goal-progress {
+  height: 7px;
+  border: 1px solid rgb(210, 209, 209);
+  border-radius: 10px;
+}
+.shadow-progress {
+  box-sizing: border-box;
+  width: 20%;
+  height: 100%;
+  border: 1px solid rgb(107, 75, 240);
+  background: rgb(107, 75, 240);
+  border-radius: 8px;
+}
+.highest-rate {
+  padding: 15px;
+  border: 1px solid rgb(221, 219, 219);
+  border-radius: 8px;
+}
+.highest-rate h3 {
+  white-space: nowrap;
+}
+.cover-div {
+  display: flex;
+  gap: 10px;
+}
+.first-cat {
+  flex: 3;
+}
+
+.second-cat {
+  flex: 1;
+}
+.progress-high-cat {
+  height: 7px;
+  border: 1px solid rgb(210, 209, 209);
+  border-radius: 10px;
+}
+.current-progress-cat {
+  box-sizing: border-box;
+  width: 20%;
+  height: 100%;
+  border: 1px solid rgb(107, 75, 240);
+  background: rgb(107, 75, 240);
+  border-radius: 8px;
+}
