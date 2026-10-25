@@ -115,13 +115,13 @@
           </section>
 
           <section class="tr-section">
-            <section class="panel new-tr" id="form">
+            <section class="panel" id="form">
               <div class="panel-heading">
                 <span class="panel-icon">+</span>
                 <h2>Yangi tranzaksiya qo'shish</h2>
               </div>
               <form class="form-sec" id="transaction-form">
-                <div class="amount-div field">
+                <div class="field">
                   <label for="amount">Miqdor</label>
                   <input
                     type="number"
@@ -131,14 +131,14 @@
                     required
                   />
                 </div>
-                <div class="currency-div field">
+                <div class="field">
                   <label for="valyuta">Valyuta</label>
-                  <select id="valyuta">
-                    <option value="USD">USD</option>
-                    <option value="UZS">UZS</option>
+                  <select id="valyuta" >
+                    <option value="USD" >USD</option>
+                    <option value="UZS" >UZS</option>
                   </select>
                 </div>
-                <div class="cat-div field">
+                <div class="field">
                   <label for="kategoriya">Kategoriya</label>
                   <select id="kategoriya" name="category" required>
                     <option>Maosh</option>
@@ -200,7 +200,7 @@
                   </thead>
                   <tbody class="tr-body" id="tr-body">
                     <tr>
-                      <td class="empty-place" colspan="7">
+                      <td class="empty-state" colspan="6">
                         Hozircha tranzaksiyalar yo'q.
                       </td>
                     </tr>
