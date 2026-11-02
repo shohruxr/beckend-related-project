@@ -51,9 +51,9 @@
           />
           <span class="notification-dot"></span>
         </button>
-        <button class="profile-btn" type="button">
+        <!-- <button class="profile-btn" type="button">
           <span>Elbek</span>
-        </button>
+        </button> -->
       </header>
 
       <div class="sum-up" id="dashboard">
@@ -66,7 +66,7 @@
                 qadam tashlang.
               </p>
             </div>
-            <time class="today-date">24 okt 2026</time>
+            <time class="today-date" id="today-date"></time>
           </section>
 
           <section class="display-section">
@@ -79,7 +79,7 @@
               <div class="info-display">
                 <span class="umumiy-balans">Umumiy balans</span>
                 <strong class="umumiy-balans-value" id="total-balance"
-                  >$0.00</strong
+                  >0.00</strong
                 >
                 <span class="balans-note">Joriy balans</span>
               </div>
@@ -93,7 +93,7 @@
               <div class="info-display">
                 <span class="umumiy-balans">Jami daromad</span>
                 <strong class="umumiy-balans-value" id="total-income"
-                  >$0.00</strong
+                  >0.00</strong
                 >
                 <span class="balans-note">Tanlangan davr uchun</span>
               </div>
@@ -107,7 +107,7 @@
               <div class="info-display">
                 <span class="umumiy-balans">Jami xarajat</span>
                 <strong class="umumiy-balans-value" id="total-expense"
-                  >$0.00</strong
+                  >0.00</strong
                 >
                 <span class="balans-note">Tanlangan davr uchun</span>
               </div>
@@ -116,7 +116,7 @@
 
           <section class="tr-section">
             <section class="panel" id="form">
-              <div class="panel-heading">
+              <div class="transaction-heading">
                 <span class="panel-icon">+</span>
                 <h2>Yangi tranzaksiya qo'shish</h2>
               </div>
@@ -133,10 +133,9 @@
                 </div>
                 <div class="field">
                   <label for="valyuta">Valyuta</label>
-                  <select id="valyuta" >
-                    <option value="USD" >USD</option>
-                    <option value="UZS" >UZS</option>
-                  </select>
+                  <div id="valyuta" class="valyuta">
+                    <span value="UZS">UZS</span>
+                  </div>
                 </div>
                 <div class="field">
                   <label for="kategoriya">Kategoriya</label>
@@ -150,14 +149,14 @@
                     <option>Boshqa</option>
                   </select>
                 </div>
-                <fieldset class="type-div field">
-                  <legend>Tranzaksiya turi</legend>
-                  <div class="type-options">
-                    <button class="daromad" type="button">Daromad</button>
-                    <button class="xarajat" type="button">Xarajat</button>
-                  </div>
+                <div class="type-div field">
+                  <h2>Tranzaksiya turi</h2>
+                  <select class="type-options">
+                    <option class="daromad" value="income">💰 Daromad</option>
+                    <option class="xarajat" value="outcome">💸 Xarajat</option>
+                  </select>
                   <input type="hidden" id="type-value" />
-                </fieldset>
+                </div>
                 <div class="data-div field">
                   <label for="date">Sana</label>
                   <input type="date" id="date" required />
@@ -166,19 +165,19 @@
                   <label for="izoh">Izoh</label>
                   <input type="text" id="izoh" placeholder="Masalan: Tushlik" />
                 </div>
-                <button class="save-btn" type="submit">
+                <button class="save-btn" id="save-btn" type="submit">
                   Tranzaksiyani saqlash
                 </button>
               </form>
             </section>
 
             <section class="panel tr-history" id="transactions">
-              <div class="panel-heading transaction-heading">
+              <div class="transaction-heading">
                 <h2>Tranzaksiyalar</h2>
               </div>
               <div class="transaction-tools">
                 <div class="btns">
-                  <button type="button" class="filter-btn active">
+                  <button type="button" class="filter-btn">
                     Barchasi
                   </button>
                   <button type="button" class="filter-btn">Daromad</button>
@@ -199,8 +198,8 @@
                     </tr>
                   </thead>
                   <tbody class="tr-body" id="tr-body">
-                    <tr>
-                      <td class="empty-state" colspan="6">
+                    <tr id="tr-table">
+                      <td class="empty-state" id="empty-state" colspan="6">
                         Hozircha tranzaksiyalar yo'q.
                       </td>
                     </tr>
@@ -213,20 +212,15 @@
 
         <aside class="aside-goal">
           <section class="goal-section" id="goal-section">
-            <div class="goal-txt"> Maqsadlar</div>
+            <div class="goal-txt">Maqsadlar</div>
             <div class="progress-div">
               <h2>Yangi maqsad</h2>
               <p class="muted-text">Maqsadingizni belgilang</p>
-              <div
-                class="goal-progress"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow="0"
-              >
+              <div class="goal-progress">
                 <div class="shadow-progress"></div>
               </div>
               <div id="display-amount">
-                <span id="goal-amount">$0 / $0</span>
+                <span id="goal-amount">0 / 0</span>
                 <span id="goal-percentage">0%</span>
               </div>
             </div>
@@ -245,7 +239,7 @@
                 </div>
               </div>
               <div class="second-cat">
-                <strong id="highest-amount">$0.00</strong>
+                <strong id="highest-amount">0.00</strong>
                 <span id="percentage-high-cat">0%</span>
               </div>
             </div>
@@ -253,5 +247,6 @@
         </aside>
       </div>
     </main>
+    <script src="server.js"></script>
   </body>
 </html>
