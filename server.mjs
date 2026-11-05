@@ -8,7 +8,7 @@ const corsHeader = {
 };
 
 let transactionID = 0;
-let transaactions = []
+let transactions = [];
 
 const server = createServer((req, res) => {
   try {
@@ -39,6 +39,9 @@ const server = createServer((req, res) => {
             res.end(JSON.stringify({ ...updatedInfo, status: "success" }));
             return;
           });
+        } else {
+          res.writeHead(404, corsHeader);
+          res.end(JSON.stringify({ message: "Tranzaksiya topilmadi" }));
         }
       } else if (req.method === "DELETE") {
         const deletedInfo = transactions.find(
@@ -48,11 +51,14 @@ const server = createServer((req, res) => {
           transactions = transactions.filter((a) => a.id !== parseInt(transID));
           res.writeHead(200, corsHeader);
           res.end(JSON.stringify({ status: "success" }));
+        } else {
+          res.writeHead(404, corsHeader);
+          res.end(JSON.stringify({ message: "Tranzaksiya topilmadi" }));
         }
         return;
       } else {
         res.writeHead(405, corsHeader);
-        res.end(JSON.stringify({ xatolik: "user not found" }));
+        res.end(JSON.stringify({ xatolik: "Transaction is not found" }));
         return;
       }
       return;
@@ -68,7 +74,11 @@ const server = createServer((req, res) => {
           body += chunk;
         });
         req.on("end", () => {
-          const newTransaction = JSON.parse(body);
+          const newTransaction = {
+            id: ++transactionID,
+            ...JSON.parse(body),
+          };
+
           transactions.push(newTransaction);
           res.writeHead(200, corsHeader);
           res.end(JSON.stringify({ ...newTransaction, status: "success" }));
@@ -83,6 +93,8 @@ const server = createServer((req, res) => {
     }
   } catch (error) {
     console.error("sorovda xatoli", error);
+    res.writeHead(500,corsHeader)
+    res.end(JSON.stringify({message:'Serverda xatolik yuz berdi'}))
   }
 });
 
