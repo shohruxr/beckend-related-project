@@ -31,10 +31,12 @@ const server = createServer((req, res) => {
           });
           req.on("end", () => {
             const newInfo = JSON.parse(body);
+
             updatedInfo.category = newInfo.category;
-            updatedInfo.description = newInfo.description;
+            updatedInfo.izoh = newInfo.izoh;
             updatedInfo.type = newInfo.type;
             updatedInfo.amount = newInfo.amount;
+            
             res.writeHead(200, corsHeader);
             res.end(JSON.stringify({ ...updatedInfo, status: "success" }));
             return;

@@ -161,8 +161,8 @@ button {
 
 .search-bar input:focus,
 .field input:focus,
-.field select:focus,
-#date-filter:focus {
+.field select:focus
+/* #date-filter:focus  */ {
   border-color: #8d78f5;
   box-shadow: 0 0 0 3px rgba(91, 53, 232, 0.1);
 }
@@ -210,12 +210,6 @@ button {
   border-radius: 50%;
   background: var(--red);
 }
-
-/* .profile-btn {
-  margin-left: 0;
-  font-size: 12px;
-  font-weight: 700;
-} */
 
 .sum-up {
   display: grid;
@@ -405,7 +399,7 @@ button {
 
 .field input,
 .field select,
-#date-filter,
+/* #date-filter, */
 .valyuta {
   width: 100%;
   min-width: 0;
@@ -418,7 +412,7 @@ button {
   background: #fff;
   font-size: 12px;
 }
-.valyuta{
+.valyuta {
   cursor: not-allowed;
 }
 
@@ -436,15 +430,6 @@ button {
   gap: 7px;
 }
 
-.type-options button {
-  flex: 1;
-  padding: 9px 5px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
 .daromad {
   color: var(--green);
   background: var(--green-soft);
@@ -452,10 +437,6 @@ button {
 .xarajat {
   color: var(--red);
   background: var(--red-soft);
-}
-.type-options button[aria-pressed="true"] {
-  outline: 2px solid currentColor;
-  outline-offset: -2px;
 }
 
 .save-btn {
@@ -505,24 +486,11 @@ button {
   background: #fff;
   font-size: 11px;
 }
-
-
+.filter-btn.active,
 .filter-btn:hover {
   border-color: var(--purple);
   color: #fff;
   background: var(--purple);
-}
-/* .filter-btn.active {
-  border-color: var(--purple);
-  color: #fff;
-  background: var(--purple);
-} */
-
-#date-filter {
-  width: auto;
-  max-width: 100%;
-  min-height: 33px;
-  font-size: 11px;
 }
 
 .table-wrapper {
@@ -590,7 +558,25 @@ tr:hover {
   font-size: 13px;
   font-weight: 700;
 }
-
+.goal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+.goal-delete-btn {
+  width: 100%;
+  min-height: 36px;
+  margin-top: 16px;
+  border: 1px solid #ffdde3;
+  border-radius: 9px;
+  color: var(--red) ;
+  background: var(--red-soft);
+  font-size: 12px
+}
+.goal-delete-btn:hover{
+  background: #ffdde3;
+}
 .progress-div {
   padding: 16px;
   border-radius: 12px 12px 0 0;
@@ -677,15 +663,49 @@ tr:hover {
   font-weight: 700;
 }
 
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 29px;
+  height: 29px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 15px;
+}
+
+.edit-btn {
+  color: var(--purple);
+  background: #f0edff;
+  border-color: #e3dcff;
+}
+.edit-btn:hover {
+  background: #e2dbff;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  color: var(--red);
+  background: #fff0f2;
+  border-color: #ffdde3;
+}
+.delete-btn:hover {
+  background: #ffdde3;
+  transform: translateY(-2px);
+}
+.action-btn:active {
+  transform: scale(0.94);
+}
 
 @media (max-width: 1200px) {
   .body-aside {
     width: 205px;
     flex-basis: 205px;
   }
-.brand{
-  font-size: 15px;
-}
+  .brand {
+    font-size: 15px;
+  }
   .main-content {
     padding-right: 16px;
     padding-left: 16px;
@@ -699,7 +719,7 @@ tr:hover {
   .tr-section {
     grid-template-columns: 1fr;
   }
-} 
+}
 
 @media (max-width: 900px) {
   .body-aside {
@@ -785,5 +805,4 @@ tr:hover {
   /* .profile-btn span {
     display: none;
   } */
-  
 }

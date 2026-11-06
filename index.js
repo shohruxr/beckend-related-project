@@ -7,8 +7,8 @@ const option = {
 };
 todayDate.textContent = today.toLocaleString("uz-UZ", option);
 
-const emptyState = document.getElementById("empty-state");
 const trBody = document.getElementById("tr-body");
+const filterButtons = document.querySelectorAll(".filter-btn");
 
 const amountInput = document.getElementById("amount");
 const categoryInput = document.getElementById("kategoriya");
@@ -19,6 +19,8 @@ const saveBtn = document.getElementById("save-btn");
 const transactionForm = document.getElementById("transaction-form");
 
 let editTransactionId = null;
+let filterType = "all";
+let transactionData = [];
 
 const fetchUsers = () => {
   fetch("http://localhost:1313/transactions")
@@ -28,8 +30,24 @@ const fetchUsers = () => {
         console.log("xatolik yuz berdi", data);
         return;
       }
+      transactionData = data;
+      const filteredData = data.filter((transaction) => {
+        if (filterType === "all") {
+          return true;
+        }
+
+        return transaction.type === filterType;
+      });
+      if (filteredData.length === 0) {
+        trBody.innerHTML = `<tr><td class="empty-state" colspan="6" >Hozircha tranzaksiyalar mavjud emas</td></tr>`;
+
+        calculateTotals(data);
+        renderGoalProgress(data);
+        renderHighestCategory(data);
+        return;
+      }
       trBody.innerHTML = "";
-      data.forEach((info) => {
+      filteredData.forEach((info) => {
         const tr = document.createElement("tr");
 
         const values = [
@@ -49,11 +67,16 @@ const fetchUsers = () => {
 
         const editButton = document.createElement("button");
         editButton.textContent = "✏️";
+        editButton.type = "button";
+        editButton.className = "action-btn edit-btn";
 
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "🗑";
+        deleteButton.type = "button";
+        deleteButton.className = "action-btn delete-btn";
 
         actionTd.append(editButton, deleteButton);
+        actionTd.className = "actions-btns";
         tr.appendChild(actionTd);
 
         trBody.appendChild(tr);
@@ -66,6 +89,15 @@ const fetchUsers = () => {
           izohInput.value = info.izoh;
           editTransactionId = info.id;
           saveBtn.textContent = "Update";
+
+          editButton.textContent = "❌";
+          editButton.addEventListener("click", () => {
+            transactionForm.reset();
+
+            editTransactionId = null;
+            saveBtn.textContent = "Tranzaksiyani saqlash";
+            editButton.textContent = "✏️";
+          });
         });
 
         deleteButton.addEventListener("click", () => {
@@ -88,16 +120,37 @@ const fetchUsers = () => {
           }
         });
       });
+
+      calculateTotals(data);
+
+      renderGoalProgress(data);
+
+      renderHighestCategory(data);
+
+      fetchUsers();
     })
     .catch((err) => {
       console.log("error found", err);
     });
 };
 
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    filterType = button.dataset.filter
+
+    filterButtons.forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    button.classList.add("active");
+    // fetchUsers();
+    fetchUsers();
+  });
+});
+
 transactionForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const amount = amountInput.value;
+  const amount = Number(amountInput.value);
   const category = categoryInput.value;
   const type = typeOptions.value;
   const date = dateInput.value;
@@ -138,7 +191,7 @@ transactionForm.addEventListener("submit", (e) => {
     amount,
   };
 
-  if (editTransactionId) {
+  if (editTransactionId !== null) {
     fetch(`http://localhost:1313/transactions/${editTransactionId}`, {
       method: "PUT",
       headers: {
@@ -187,3 +240,168 @@ transactionForm.addEventListener("submit", (e) => {
       });
   }
 });
+
+const totalBalance = document.getElementById("total-balance");
+const totalIncome = document.getElementById("total-income");
+const totalExpense = document.getElementById("total-expense");
+
+function calculateTotals(data) {
+  let income = 0;
+  let expense = 0;
+
+  data.forEach((transaction) => {
+    const amount = Number(transaction.amount);
+
+    if (transaction.type === "income") {
+      income += amount;
+    } else if (transaction.type === "outcome") {
+      expense += amount;
+    }
+  });
+
+  const balance = income - expense;
+
+  totalIncome.textContent = `${income.toLocaleString("fr-FR")} so'm`;
+  totalExpense.textContent = `${expense.toLocaleString("fr-FR")} so'm`;
+  totalBalance.textContent = `${balance.toLocaleString("fr-FR")} so'm`;
+}
+
+const goalForm = document.getElementById("goal-form");
+const goalNameInput = document.getElementById("goal-name");
+const goalTarget = document.getElementById("goal-target");
+
+const goalTitle = document.getElementById("goal-title");
+const goalHint = document.getElementById("goal-hint");
+// const goalProgress = document.getElementById("goal-progress");
+const goalAmount = document.getElementById("goal-amount");
+const goalPercentage = document.getElementById("goal-percentage");
+const goalBar = document.getElementById("goal-bar");
+const goalProcess = document.getElementById("goal-process");
+const goalDeleteBtn = document.getElementById("goal-delete-btn");
+
+let currentGoal = JSON.parse(localStorage.getItem("myGoal") || "null");
+
+goalForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const name = goalNameInput.value.trim();
+  const amount = Number(goalTarget.value);
+
+  if (!name || amount <= 0) {
+    alert("Maqsad nomi va summasini togri kiriting");
+    return;
+  }
+
+  currentGoal = {
+    name,
+    amount,
+  };
+
+  localStorage.setItem("myGoal", JSON.stringify(currentGoal));
+
+  goalForm.reset();
+  // fetchUsers()
+  renderGoalProgress(transactionData);
+});
+
+goalDeleteBtn.addEventListener("click", () => {
+  if (confirm("Maqsadni o'chirmoqchimisiz")) {
+    currentGoal = null;
+    localStorage.removeItem("myGoal");
+    renderGoalProgress(transactionData);
+  }
+});
+
+function renderGoalProgress(transactionsData) {
+  if (!currentGoal) {
+    goalTitle.textContent = "Yangi maqsad";
+    goalHint.hidden = false;
+    goalForm.hidden = false;
+    goalProcess.hidden = true;
+    return;
+  }
+
+  let savedAmount = 0;
+
+  transactionsData.forEach((transaction) => {
+    if (transaction.type === "income") {
+      if (transaction.category === "Maqsad") {
+        savedAmount += Number(transaction.amount) || 0;
+      }
+    }
+    if (transaction.type === "outcome") {
+      if (transaction.category === "Maqsad") {
+        savedAmount -= Number(transaction.amount);
+      }
+    }
+  });
+  savedAmount = Math.max(savedAmount, 0);
+  const percentage = Math.min((savedAmount / currentGoal.amount) * 100, 100);
+
+  goalTitle.textContent = currentGoal.name;
+
+  goalAmount.textContent = `${savedAmount.toLocaleString("fr-FR")} / ${currentGoal.amount.toLocaleString("fr-FR")} so'm`;
+
+  goalPercentage.textContent = `${percentage.toFixed(1)}%`;
+
+  goalBar.style.width = `${percentage}%`;
+
+  goalHint.hidden = true;
+  goalForm.hidden = true;
+  goalProcess.hidden = false;
+}
+
+const highestCategory = document.getElementById("highest-category");
+const highestAmount = document.getElementById("highest-amount");
+const currentProgressCat = document.getElementById("current-progress-cat");
+const percentageHighCat = document.getElementById("percentage-high-cat");
+
+function renderHighestCategory(data) {
+  const categories = {};
+  let totalExpense = 0;
+
+  data.forEach((transaction) => {
+    if (transaction.type === "outcome") {
+      const category = transaction.category;
+      const amount = Number(transaction.amount) || 0;
+
+      categories[category] = (categories[category] || 0) + amount;
+
+      totalExpense += amount;
+    }
+  });
+
+  const categoryList = Object.entries(categories);
+
+  if (categoryList.length === 0) {
+    highestCategory.textContent = "Hozircha ma'lumot yo'q";
+    highestAmount.textContent = "0.00";
+    percentageHighCat.textContent = "0%";
+    currentProgressCat.style.width = "0%";
+    return;
+  }
+
+  const [name, amount] = categoryList.reduce((max, current) => {
+    if (current[1] > max[1]) {
+      return current;
+    } else {
+      return max;
+    }
+  });
+
+  const percentage = (amount / totalExpense) * 100;
+
+  highestCategory.textContent = name;
+  highestAmount.textContent = `${amount.toLocaleString("fr-FR")} so'm`;
+  percentageHighCat.textContent = `${percentage.toFixed(1)}%`;
+  currentProgressCat.style.width = `${percentage}%`;
+}
+
+const searchInput = document.getElementById("searchInput");
+
+function cancelEdit() {
+  transactionForm.reset();
+  editTransactionId = null;
+  saveBtn.textContent = "Tranzaksiyani saqlash";
+  fetchUsers();
+}
