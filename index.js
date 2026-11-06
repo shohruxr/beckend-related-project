@@ -127,7 +127,7 @@ const fetchUsers = () => {
 
       renderHighestCategory(data);
 
-      fetchUsers();
+      searchTransactions();
     })
     .catch((err) => {
       console.log("error found", err);
@@ -143,7 +143,7 @@ filterButtons.forEach((button) => {
     });
     button.classList.add("active");
     // fetchUsers();
-    fetchUsers();
+    searchTransactions();
   });
 });
 
@@ -403,5 +403,127 @@ function cancelEdit() {
   transactionForm.reset();
   editTransactionId = null;
   saveBtn.textContent = "Tranzaksiyani saqlash";
-  fetchUsers();
+  searchTransactions();
 }
+
+function searchTransactions() {
+  const searchValue = searchInput.value.trim().toLowerCase();
+
+  const filteredData = transactionData.filter((item) => {
+    const matchType = filterType === "all" || item.type === filterType;
+
+    const matchSearch = String(item.izoh || "")
+      .toLowerCase()
+      .includes(searchValue);
+
+    return matchType && matchSearch;
+  });
+
+  trBody.innerHTML = "";
+
+  if (filteredData.length === 0) {
+    trBody.innerHTML = `
+    <tr>
+    <td class='empty-state' colspan='6'>Tranzaksiya topildi</td>
+    </tr>`;
+    return;
+  }
+
+  filteredData.forEach((info) => {
+    {
+      const tr = document.createElement("tr");
+
+      const values = [
+        info.category,
+        info.izoh,
+        info.date,
+        info.type,
+        `${Number(info.amount).toLocaleString("fr-FR")}`,
+      ];
+
+      values.forEach((value) => {
+        const td = document.createElement("td");
+        td.textContent = value;
+        tr.appendChild(td);
+      });
+      const actionTd = document.createElement("td");
+
+      const editButton = document.createElement("button");
+      editButton.textContent = "✏️";
+      editButton.type = "button";
+      editButton.className = "action-btn edit-btn";
+
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "🗑";
+      deleteButton.type = "button";
+      deleteButton.className = "action-btn delete-btn";
+
+      actionTd.append(editButton, deleteButton);
+      actionTd.className = "actions-btns";
+      tr.appendChild(actionTd);
+
+      trBody.appendChild(tr);
+
+      editButton.addEventListener("click", () => {
+        if (editTransactionId === info.id) return cancelEdit();
+        amountInput.value = info.amount;
+        categoryInput.value = info.category;
+        typeOptions.value = info.type;
+        dateInput.value = info.date;
+        izohInput.value = info.izoh;
+        editTransactionId = info.id;
+        saveBtn.textContent = "Update";
+        searchTransactions();
+
+        // editButton.textContent = "❌";
+        // editButton.addEventListener("click", () => {
+        //   transactionForm.reset();
+
+        //   editTransactionId = null;
+        //   saveBtn.textContent = "Tranzaksiyani saqlash";
+        //   editButton.textContent = "✏️"
+        // });
+      });
+
+      deleteButton.addEventListener("click", () => {
+        if (confirm("Do you want to delete the transaction")) {
+          fetch(`http://localhost:1313/transactions/${info.id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "success") {
+                fetchUsers();
+                alert("Transaction has been deleted");
+              } else {
+                alert("Error occured");
+              }
+            });
+        }
+      });
+    }
+  });
+}
+
+function debounce(callback, delay) {
+  let timer;
+
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
+searchInput.addEventListener(
+  "input",
+  debounce(() => {
+    searchTransactions();
+  }, 500),
+);
+renderGoalProgress([]);
+fetchUsers();
