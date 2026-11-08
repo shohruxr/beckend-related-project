@@ -564,6 +564,9 @@ tr:hover {
   gap: 12px;
   margin-top: 14px;
 }
+[hidden]{
+  display: none !important;
+}
 .goal-delete-btn {
   width: 100%;
   min-height: 36px;

@@ -30,16 +30,23 @@ const server = createServer((req, res) => {
             body += chunk;
           });
           req.on("end", () => {
-            const newInfo = JSON.parse(body);
+            let newInfo;
+            try {
+              newInfo = JSON.parse(body);
 
-            updatedInfo.category = newInfo.category;
-            updatedInfo.izoh = newInfo.izoh;
-            updatedInfo.type = newInfo.type;
-            updatedInfo.amount = newInfo.amount;
-            
-            res.writeHead(200, corsHeader);
-            res.end(JSON.stringify({ ...updatedInfo, status: "success" }));
-            return;
+              updatedInfo.category = newInfo.category;
+              updatedInfo.izoh = newInfo.izoh;
+              updatedInfo.date = newInfo.date;
+              updatedInfo.type = newInfo.type;
+              updatedInfo.amount = newInfo.amount;
+
+              res.writeHead(200, corsHeader);
+              res.end(JSON.stringify({ ...updatedInfo, status: "success" }));
+              return;
+            } catch {
+              res.writeHead(400, corsHeader);
+              res.end(JSON.stringify({ message: "Noto'g'ri JSON" }));
+            }
           });
         } else {
           res.writeHead(404, corsHeader);
@@ -76,14 +83,20 @@ const server = createServer((req, res) => {
           body += chunk;
         });
         req.on("end", () => {
-          const newTransaction = {
-            id: ++transactionID,
-            ...JSON.parse(body),
-          };
+          let newTransaction;
+          try {
+            newTransaction = {
+              ...JSON.parse(body),
+              id: ++transactionID,
+            };
 
-          transactions.push(newTransaction);
-          res.writeHead(200, corsHeader);
-          res.end(JSON.stringify({ ...newTransaction, status: "success" }));
+            transactions.push(newTransaction);
+            res.writeHead(200, corsHeader);
+            res.end(JSON.stringify({ ...newTransaction, status: "success" }));
+          } catch {
+            res.writeHead(400, corsHeader);
+            res.end(JSON.stringify({ message: "Noto'g'ri JSON" }));
+          }
         });
       } else {
         res.writeHead(405, corsHeader);
@@ -95,8 +108,8 @@ const server = createServer((req, res) => {
     }
   } catch (error) {
     console.error("sorovda xatoli", error);
-    res.writeHead(500,corsHeader)
-    res.end(JSON.stringify({message:'Serverda xatolik yuz berdi'}))
+    res.writeHead(500, corsHeader);
+    res.end(JSON.stringify({ message: "Serverda xatolik yuz berdi" }));
   }
 });
 

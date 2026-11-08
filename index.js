@@ -5,7 +5,7 @@ const option = {
   month: "short",
   year: "numeric",
 };
-todayDate.textContent = today.toLocaleString("uz-UZ", option);
+todayDate.textContent = today.toLocaleString("ko-KR", option);
 
 const trBody = document.getElementById("tr-body");
 const filterButtons = document.querySelectorAll(".filter-btn");
@@ -30,96 +30,8 @@ const fetchUsers = () => {
         console.log("xatolik yuz berdi", data);
         return;
       }
+
       transactionData = data;
-      const filteredData = data.filter((transaction) => {
-        if (filterType === "all") {
-          return true;
-        }
-
-        return transaction.type === filterType;
-      });
-      if (filteredData.length === 0) {
-        trBody.innerHTML = `<tr><td class="empty-state" colspan="6" >Hozircha tranzaksiyalar mavjud emas</td></tr>`;
-
-        calculateTotals(data);
-        renderGoalProgress(data);
-        renderHighestCategory(data);
-        return;
-      }
-      trBody.innerHTML = "";
-      filteredData.forEach((info) => {
-        const tr = document.createElement("tr");
-
-        const values = [
-          info.category,
-          info.izoh,
-          info.date,
-          info.type,
-          `${Number(info.amount).toLocaleString("fr-FR")}`,
-        ];
-
-        values.forEach((value) => {
-          const td = document.createElement("td");
-          td.textContent = value;
-          tr.appendChild(td);
-        });
-        const actionTd = document.createElement("td");
-
-        const editButton = document.createElement("button");
-        editButton.textContent = "✏️";
-        editButton.type = "button";
-        editButton.className = "action-btn edit-btn";
-
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "🗑";
-        deleteButton.type = "button";
-        deleteButton.className = "action-btn delete-btn";
-
-        actionTd.append(editButton, deleteButton);
-        actionTd.className = "actions-btns";
-        tr.appendChild(actionTd);
-
-        trBody.appendChild(tr);
-
-        editButton.addEventListener("click", () => {
-          amountInput.value = info.amount;
-          categoryInput.value = info.category;
-          typeOptions.value = info.type;
-          dateInput.value = info.date;
-          izohInput.value = info.izoh;
-          editTransactionId = info.id;
-          saveBtn.textContent = "Update";
-
-          editButton.textContent = "❌";
-          editButton.addEventListener("click", () => {
-            transactionForm.reset();
-
-            editTransactionId = null;
-            saveBtn.textContent = "Tranzaksiyani saqlash";
-            editButton.textContent = "✏️";
-          });
-        });
-
-        deleteButton.addEventListener("click", () => {
-          if (confirm("Do you want to delete the transaction")) {
-            fetch(`http://localhost:1313/transactions/${info.id}`, {
-              method: "DELETE",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.status === "success") {
-                  fetchUsers();
-                  alert("Transaction has been deleted");
-                } else {
-                  alert("Error occured");
-                }
-              });
-          }
-        });
-      });
 
       calculateTotals(data);
 
@@ -130,19 +42,20 @@ const fetchUsers = () => {
       searchTransactions();
     })
     .catch((err) => {
-      console.log("error found", err);
+      console.log("Serverga ukanib bo'lmadi ", err);
+      trBody.innerHTML = `<tr><td class="empty-state" colspan="6">Serverga ulanib bo'lmadi</td></tr>`;
     });
 };
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    filterType = button.dataset.filter
+    filterType = button.dataset.filter;
 
     filterButtons.forEach((btn) => {
       btn.classList.remove("active");
     });
     button.classList.add("active");
-    // fetchUsers();
+
     searchTransactions();
   });
 });
@@ -160,7 +73,7 @@ transactionForm.addEventListener("submit", (e) => {
     alert("Barcha maydonlarni toldiring!");
     return;
   }
-  if (!Number.isFinite(Number(amount)) || amount <= 0) {
+  if (!Number.isFinite(amount) || amount <= 0) {
     alert("Miqdor 0 dan katta bolishi kerak");
     return;
   }
@@ -169,7 +82,7 @@ transactionForm.addEventListener("submit", (e) => {
     return;
   }
   const year = Number(date.slice(0, 4));
-  if (year < 2000 || year > today.getFullYear()) {
+  if (year < 2000) {
     alert("Yil 2000-yildan hozirgi yilgacha bolishi kerak!");
     return;
   }
@@ -208,13 +121,13 @@ transactionForm.addEventListener("submit", (e) => {
           editTransactionId = null;
           saveBtn.textContent = "Tranzaksiyani saqlash";
 
-          alert("Changes have been saved");
+          alert("O'zgarishlar saqlandi");
         } else {
-          alert("Error occured while editing");
+          alert("Tahrirlashda xatolik yuz berdi");
         }
       })
       .catch((err) => {
-        console.log("Error occured while editing");
+        console.log("Tahrirlashda xatolik yuz berdi");
       });
   } else {
     fetch("http://localhost:1313/transactions", {
@@ -230,13 +143,14 @@ transactionForm.addEventListener("submit", (e) => {
           fetchUsers();
           transactionForm.reset();
 
-          alert("New transaction is added");
+          alert("Yangi tranzaksiya qo'shildi");
         } else {
-          alert("Error occured");
+          alert("Xatolik yuz berdi");
         }
       })
       .catch((err) => {
-        console.log("Error occured ", err);
+        alert("Serverga ulanib bo'lmadi");
+        console.log("Serverga ulanib bo'lmadi ", err);
       });
   }
 });
@@ -272,7 +186,6 @@ const goalTarget = document.getElementById("goal-target");
 
 const goalTitle = document.getElementById("goal-title");
 const goalHint = document.getElementById("goal-hint");
-// const goalProgress = document.getElementById("goal-progress");
 const goalAmount = document.getElementById("goal-amount");
 const goalPercentage = document.getElementById("goal-percentage");
 const goalBar = document.getElementById("goal-bar");
@@ -287,7 +200,7 @@ goalForm.addEventListener("submit", (e) => {
   const name = goalNameInput.value.trim();
   const amount = Number(goalTarget.value);
 
-  if (!name || amount <= 0) {
+  if (!name || !Number.isFinite(amount) || amount <= 0) {
     alert("Maqsad nomi va summasini togri kiriting");
     return;
   }
@@ -326,7 +239,7 @@ function renderGoalProgress(transactionsData) {
   transactionsData.forEach((transaction) => {
     if (transaction.type === "income") {
       if (transaction.category === "Maqsad") {
-        savedAmount += Number(transaction.amount) || 0;
+        savedAmount += Number(transaction.amount);
       }
     }
     if (transaction.type === "outcome") {
@@ -361,9 +274,9 @@ function renderHighestCategory(data) {
   let totalExpense = 0;
 
   data.forEach((transaction) => {
-    if (transaction.type === "outcome") {
+    if (transaction.type === "outcome" && transaction.category !== "Maqsad") {
       const category = transaction.category;
-      const amount = Number(transaction.amount) || 0;
+      const amount = Number(transaction.amount);
 
       categories[category] = (categories[category] || 0) + amount;
 
@@ -412,7 +325,15 @@ function searchTransactions() {
   const filteredData = transactionData.filter((item) => {
     const matchType = filterType === "all" || item.type === filterType;
 
-    const matchSearch = String(item.izoh || "")
+    const matchSearch = [
+      item.izoh,
+      item.category,
+      item.date,
+      item.type === "income" ? "daromad" : "xarajat",
+      Number(item.amount).toLocaleString("fr-FR"),
+      String(item.amount),
+    ]
+      .join(" ")
       .toLowerCase()
       .includes(searchValue);
 
@@ -422,9 +343,16 @@ function searchTransactions() {
   trBody.innerHTML = "";
 
   if (filteredData.length === 0) {
+    if (transactionData.length === 0) {
+      trBody.innerHTML = `
+    <tr>
+    <td class='empty-state' colspan='6'>Hozircha tranzaksiyalar yo'q</td>
+    </tr>`;
+      return;
+    }
     trBody.innerHTML = `
     <tr>
-    <td class='empty-state' colspan='6'>Tranzaksiya topildi</td>
+    <td class='empty-state' colspan='6'>Tranzaksiya topilmadi</td>
     </tr>`;
     return;
   }
@@ -437,7 +365,7 @@ function searchTransactions() {
         info.category,
         info.izoh,
         info.date,
-        info.type,
+        info.type === "income" ? "Daromad" : "Xarajat",
         `${Number(info.amount).toLocaleString("fr-FR")}`,
       ];
 
@@ -452,6 +380,7 @@ function searchTransactions() {
       editButton.textContent = "✏️";
       editButton.type = "button";
       editButton.className = "action-btn edit-btn";
+      editButton.textContent = editTransactionId === info.id ? "❌" : "✏️";
 
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "🗑";
@@ -466,27 +395,19 @@ function searchTransactions() {
 
       editButton.addEventListener("click", () => {
         if (editTransactionId === info.id) return cancelEdit();
+
         amountInput.value = info.amount;
         categoryInput.value = info.category;
         typeOptions.value = info.type;
         dateInput.value = info.date;
         izohInput.value = info.izoh;
         editTransactionId = info.id;
-        saveBtn.textContent = "Update";
+        saveBtn.textContent = "Yangilash";
         searchTransactions();
-
-        // editButton.textContent = "❌";
-        // editButton.addEventListener("click", () => {
-        //   transactionForm.reset();
-
-        //   editTransactionId = null;
-        //   saveBtn.textContent = "Tranzaksiyani saqlash";
-        //   editButton.textContent = "✏️"
-        // });
       });
 
       deleteButton.addEventListener("click", () => {
-        if (confirm("Do you want to delete the transaction")) {
+        if (confirm("Tranzaksiyani o'chirishni xohlaysizmi?")) {
           fetch(`http://localhost:1313/transactions/${info.id}`, {
             method: "DELETE",
             headers: {
@@ -497,10 +418,17 @@ function searchTransactions() {
             .then((data) => {
               if (data.status === "success") {
                 fetchUsers();
-                alert("Transaction has been deleted");
+                if (editTransactionId === info.id) {
+                  cancelEdit();
+                }
+                alert("Tranzaksiya o'chirib tashlandi");
               } else {
-                alert("Error occured");
+                alert("Xatolik yuz berdi");
               }
+            })
+            .catch((err) => {
+              alert("Serverga ulanib bo'lmadi");
+              console.log("Serverga ulanib bo'lmadi", err);
             });
         }
       });
