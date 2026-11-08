@@ -23,7 +23,7 @@ let filterType = "all";
 let transactionData = [];
 
 const fetchUsers = () => {
-  fetch("http://localhost:1313/transactions")
+  fetch("/transactions")
     .then((res) => res.json())
     .then((data) => {
       if (!Array.isArray(data)) {
@@ -105,7 +105,7 @@ transactionForm.addEventListener("submit", (e) => {
   };
 
   if (editTransactionId !== null) {
-    fetch(`http://localhost:1313/transactions/${editTransactionId}`, {
+    fetch(`/transactions/${editTransactionId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -130,7 +130,7 @@ transactionForm.addEventListener("submit", (e) => {
         console.log("Tahrirlashda xatolik yuz berdi");
       });
   } else {
-    fetch("http://localhost:1313/transactions", {
+    fetch("/transactions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -408,7 +408,7 @@ function searchTransactions() {
 
       deleteButton.addEventListener("click", () => {
         if (confirm("Tranzaksiyani o'chirishni xohlaysizmi?")) {
-          fetch(`http://localhost:1313/transactions/${info.id}`, {
+          fetch(`/transactions/${info.id}`, {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
