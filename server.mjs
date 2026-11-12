@@ -9,6 +9,68 @@ const corsHeader = {
 
 let transactionID = 0;
 let transactions = [];
+class TransactionValidator {
+  constructor(categories) {
+    this.categories = categories;
+  }
+
+  isRealDate(date) {
+    if (typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return false;
+    }
+    const [year, month, day] = date.split("-").map(Number);
+    const today = new Date(Date.UTC(year, month - 1, day));
+    return (
+      today.getUTCFullYear() === year &&
+      today.getUTCMonth() === month - 1 &&
+      today.getUTCDate() === day
+    );
+  }
+
+  validate(data) {
+    const errors = [];
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      return ["So'rov tanasi obyekt bo'lishi kerak"];
+    }
+    const { category, izoh, date, type, amount } = data;
+    if (!this.categories.includes(category)) {
+      errors.push("Kategoriya noto'gri");
+    }
+    if (typeof izoh !== "string" || !izoh.trim()) {
+      errors.push("Izoh bo'sh bo'lmasligi kerak");
+    }
+    if (!Number.isFinite(amount) || amount <= 0) {
+      errors.push("Summa 0 dan katta bo'lishi kerak");
+    }
+    if (type !== "income" && type !== "outcome") {
+      errors.push("Summa 0 dan katta bo'lishi kerak");
+    }
+    if (!this.isRealDate(date)) {
+      errors.push("Sana noto'g'ri");
+    } else {
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10);
+      if (Number(date.slice(0, 4)) < 2000) {
+        errors.push("Yil 2000-yildan kichik bo'lmasligi kerak");
+      } else if (date > tomorrow) {
+        errors.push("Kelajakdagi sanani kiritish mumkin emas");
+      }
+    }
+    return errors;
+  }
+}
+
+const validator = new TransactionValidator([
+  "Maosh",
+  "O'yin-kulgi",
+  "Oziq-ovqat",
+  "Transport",
+  "Uy-joy",
+  "Kommunal",
+  "Maqsad",
+  "Boshqa",
+]);
 
 const server = createServer((req, res) => {
   try {
@@ -33,7 +95,14 @@ const server = createServer((req, res) => {
             let newInfo;
             try {
               newInfo = JSON.parse(body);
-
+              const errors = validator.validate(newInfo);
+              if (errors.length > 0) {
+                res.writeHead(400, corsHeader);
+                res.end(
+                  JSON.stringify({ message: "Ma'lumotlar noto'g'ri", errors }),
+                );
+                return;
+              }
               updatedInfo.category = newInfo.category;
               updatedInfo.izoh = newInfo.izoh;
               updatedInfo.date = newInfo.date;
@@ -85,13 +154,26 @@ const server = createServer((req, res) => {
         req.on("end", () => {
           let newTransaction;
           try {
+            const newInfo = JSON.parse(body);
+            const errors = validator.validate(newInfo);
+            if (errors.length > 0) {
+              res.writeHead(400, corsHeader);
+              res.end(
+                JSON.stringify({ message: "Ma'lumotlar noto'g'ri", errors }),
+              );
+              return;
+            }
             newTransaction = {
-              ...JSON.parse(body),
               id: ++transactionID,
+              category: newInfo.category,
+              izoh: newInfo.izoh,
+              date: newInfo.date,
+              type: newInfo.type,
+              amount: newInfo.amount,
             };
 
             transactions.push(newTransaction);
-            res.writeHead(200, corsHeader);
+            res.writeHead(201, corsHeader);
             res.end(JSON.stringify({ ...newTransaction, status: "success" }));
           } catch {
             res.writeHead(400, corsHeader);
@@ -103,8 +185,8 @@ const server = createServer((req, res) => {
         res.end(JSON.stringify({ xatolik: "sorov metodi notogri" }));
       }
     } else {
-      res.writeHead(405, corsHeader);
-      res.end(JSON.stringify({ xatolik: "url metodi notogri" }));
+      res.writeHead(404, corsHeader);
+      res.end(JSON.stringify({ message: "Manzil topilmadi" }));
     }
   } catch (error) {
     console.error("sorovda xatoli", error);

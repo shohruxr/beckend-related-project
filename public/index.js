@@ -21,31 +21,54 @@ const transactionForm = document.getElementById("transaction-form");
 let editTransactionId = null;
 let filterType = "all";
 let transactionData = [];
+let saving = false;
 
-const fetchUsers = () => {
-  fetch("/transactions")
-    .then((res) => res.json())
-    .then((data) => {
-      if (!Array.isArray(data)) {
-        console.log("xatolik yuz berdi", data);
-        return;
-      }
+function getErrorMessage(data, status) {
+  const message = data?.message || `Server xatosi (${status})`;
+  return data?.errors ? `${message}\n- ${data.errors.join("\n- ")}` : message;
+}
 
-      transactionData = data;
+async function fetchUsers() {
+  if (transactionData.length === 0) {
+    trBody.innerHTML = `
+    <tr>
+      <td class="empty-state" colspan="6">
+        Yuklanmoqda...
+      </td>
+    </tr>`;
+  }
 
-      calculateTotals(data);
+  try {
+    const res = await fetch("/transactions");
+    if (!res.ok) {
+      throw new Error (`Server xatosi: ${res.status}`)
+    }
+    const data = await res.json();
 
-      renderGoalProgress(data);
+    if (!Array.isArray(data)) {
+      console.log("xatolik yuz berdi", data);
+      return;
+    }
 
-      renderHighestCategory(data);
+    transactionData = data;
 
-      searchTransactions();
-    })
-    .catch((err) => {
-      console.log("Serverga ukanib bo'lmadi ", err);
-      trBody.innerHTML = `<tr><td class="empty-state" colspan="6">Serverga ulanib bo'lmadi</td></tr>`;
-    });
-};
+    calculateTotals(data);
+
+    renderGoalProgress(data);
+
+    renderHighestCategory(data);
+
+    searchTransactions();
+  } catch (err) {
+    console.log("Serverga ulanib bo'lmadi ", err);
+    trBody.innerHTML = `
+    <tr>
+      <td class="empty-state" colspan="6">
+        Serverga ulanib bo'lmadi
+      </td>
+    </tr>`;
+  }
+}
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -60,8 +83,10 @@ filterButtons.forEach((button) => {
   });
 });
 
-transactionForm.addEventListener("submit", (e) => {
+transactionForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  if (saving) return;
 
   const amount = Number(amountInput.value);
   const category = categoryInput.value;
@@ -104,54 +129,55 @@ transactionForm.addEventListener("submit", (e) => {
     amount,
   };
 
-  if (editTransactionId !== null) {
-    fetch(`/transactions/${editTransactionId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(transaction),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          fetchUsers();
-          transactionForm.reset();
-
-          editTransactionId = null;
-          saveBtn.textContent = "Tranzaksiyani saqlash";
-
-          alert("O'zgarishlar saqlandi");
-        } else {
-          alert("Tahrirlashda xatolik yuz berdi");
-        }
-      })
-      .catch((err) => {
-        console.log("Tahrirlashda xatolik yuz berdi");
+  saving = true;
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saqplanmoqda...";
+  try {
+    if (editTransactionId !== null) {
+      const res = await fetch(`/transactions/${editTransactionId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transaction),
       });
-  } else {
-    fetch("/transactions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(transaction),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          fetchUsers();
-          transactionForm.reset();
+      const data = await res.json().catch(() => null);
 
-          alert("Yangi tranzaksiya qo'shildi");
-        } else {
-          alert("Xatolik yuz berdi");
-        }
-      })
-      .catch((err) => {
-        alert("Serverga ulanib bo'lmadi");
-        console.log("Serverga ulanib bo'lmadi ", err);
+      if (!res.ok) {
+        alert(getErrorMessage(data, res.status));
+        return;
+      }
+      await fetchUsers();
+      transactionForm.reset();
+
+      editTransactionId = null;
+      alert("O'zgarishlar saqlandi");
+    } else {
+      const res = await fetch("/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transaction),
       });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        alert(getErrorMessage(data, res.status));
+        return;
+      }
+
+      await fetchUsers();
+      transactionForm.reset();
+      alert("Yamgi tranzaksiya qo'shildi");
+    }
+  } catch (error) {
+    alert("Servergs ulanib bo'lmadi");
+    console.error("Serverga ulanib bo'lmadi ", error);
+  } finally {
+    saving = false;
+    saveBtn.disabled = false;
+    saveBtn.textContent =
+      editTransactionId !== null ? "Yangilash" : "Tranzaksiyani saqlash";
   }
 });
 
@@ -380,61 +406,68 @@ function searchTransactions() {
       editButton.textContent = "✏️";
       editButton.type = "button";
       editButton.className = "action-btn edit-btn";
+      editButton.dataset.action = "edit";
+      editButton.dataset.id = info.id;
       editButton.textContent = editTransactionId === info.id ? "❌" : "✏️";
 
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "🗑";
       deleteButton.type = "button";
       deleteButton.className = "action-btn delete-btn";
+      deleteButton.dataset.action = "delete";
+      deleteButton.dataset.id = info.id;
 
       actionTd.append(editButton, deleteButton);
       actionTd.className = "actions-btns";
       tr.appendChild(actionTd);
 
       trBody.appendChild(tr);
-
-      editButton.addEventListener("click", () => {
-        if (editTransactionId === info.id) return cancelEdit();
-
-        amountInput.value = info.amount;
-        categoryInput.value = info.category;
-        typeOptions.value = info.type;
-        dateInput.value = info.date;
-        izohInput.value = info.izoh;
-        editTransactionId = info.id;
-        saveBtn.textContent = "Yangilash";
-        searchTransactions();
-      });
-
-      deleteButton.addEventListener("click", () => {
-        if (confirm("Tranzaksiyani o'chirishni xohlaysizmi?")) {
-          fetch(`/transactions/${info.id}`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (data.status === "success") {
-                fetchUsers();
-                if (editTransactionId === info.id) {
-                  cancelEdit();
-                }
-                alert("Tranzaksiya o'chirib tashlandi");
-              } else {
-                alert("Xatolik yuz berdi");
-              }
-            })
-            .catch((err) => {
-              alert("Serverga ulanib bo'lmadi");
-              console.log("Serverga ulanib bo'lmadi", err);
-            });
-        }
-      });
     }
   });
 }
+
+trBody.addEventListener("click", async (e) => {
+  const button = e.target.closest("button[data-action]");
+  if (!button) return;
+  const info = transactionData.find(
+    (item) => item.id === Number(button.dataset.id),
+  );
+  if (!info) return;
+
+  if (button.dataset.action === "edit") {
+    if (editTransactionId === info.id) return cancelEdit();
+
+    amountInput.value = info.amount;
+    categoryInput.value = info.category;
+    typeOptions.value = info.type;
+    dateInput.value = info.date;
+    izohInput.value = info.izoh;
+    editTransactionId = info.id;
+    saveBtn.textContent = "Yangilash";
+    searchTransactions();
+  }
+  if (button.dataset.action === "delete") {
+    if (!confirm("Tranzaksiyani o'chirishni xohlaysizmi?")) return;
+    try {
+      const res = await fetch(`/transactions/${info.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        alert(getErrorMessage(data, res.status));
+        return;
+      }
+      await fetchUsers();
+      if (editTransactionId === info.id) {
+        cancelEdit();
+      }
+      alert("Tranzaksiya o'chirib tashlandi");
+    } catch (error) {
+      alert("Serverga ulanib bo'lmadi");
+      console.error("Serverga ulanib bo'lmadi ", error);
+    }
+  }
+});
 
 function debounce(callback, delay) {
   let timer;
