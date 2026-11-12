@@ -41,13 +41,12 @@ async function fetchUsers() {
   try {
     const res = await fetch("/transactions");
     if (!res.ok) {
-      throw new Error (`Server xatosi: ${res.status}`)
+      throw new Error(`Server xatosi: ${res.status}`);
     }
     const data = await res.json();
 
     if (!Array.isArray(data)) {
-      console.log("xatolik yuz berdi", data);
-      return;
+      throw new Error("Serverdan noto'g'ri ma'lumot keldi");
     }
 
     transactionData = data;
@@ -131,7 +130,7 @@ transactionForm.addEventListener("submit", async (e) => {
 
   saving = true;
   saveBtn.disabled = true;
-  saveBtn.textContent = "Saqplanmoqda...";
+  saveBtn.textContent = "Saqlanmoqda...";
   try {
     if (editTransactionId !== null) {
       const res = await fetch(`/transactions/${editTransactionId}`, {
@@ -147,10 +146,10 @@ transactionForm.addEventListener("submit", async (e) => {
         alert(getErrorMessage(data, res.status));
         return;
       }
-      await fetchUsers();
-      transactionForm.reset();
-
       editTransactionId = null;
+      transactionForm.reset();
+      await fetchUsers();
+
       alert("O'zgarishlar saqlandi");
     } else {
       const res = await fetch("/transactions", {
@@ -168,10 +167,10 @@ transactionForm.addEventListener("submit", async (e) => {
 
       await fetchUsers();
       transactionForm.reset();
-      alert("Yamgi tranzaksiya qo'shildi");
+      alert("Yangi tranzaksiya qo'shildi");
     }
   } catch (error) {
-    alert("Servergs ulanib bo'lmadi");
+    alert("Serverga ulanib bo'lmadi");
     console.error("Serverga ulanib bo'lmadi ", error);
   } finally {
     saving = false;

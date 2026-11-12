@@ -43,17 +43,22 @@ class TransactionValidator {
       errors.push("Summa 0 dan katta bo'lishi kerak");
     }
     if (type !== "income" && type !== "outcome") {
-      errors.push("Summa 0 dan katta bo'lishi kerak");
+      errors.push("Tranzaksiya turi noto'g'ri");
     }
     if (!this.isRealDate(date)) {
       errors.push("Sana noto'g'ri");
     } else {
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-        .toISOString()
-        .slice(0, 10);
+      const now = new Date();
+
+      const today = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0"),
+        String(now.getDate()).padStart(2, "0"),
+      ].join("-");
+
       if (Number(date.slice(0, 4)) < 2000) {
         errors.push("Yil 2000-yildan kichik bo'lmasligi kerak");
-      } else if (date > tomorrow) {
+      } else if (date > today) {
         errors.push("Kelajakdagi sanani kiritish mumkin emas");
       }
     }
